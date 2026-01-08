@@ -12,6 +12,7 @@ from pynput import keyboard
 pyautogui.FAILSAFE = True
 
 # Spieler steht links außerhalb des Feldes auf (0,1) und blickt auf (1,1).
+# Player starts just left of the field at (0,1) facing into (1,1).
 START_POS = (0, 1)
 GRID_SIZE = 9
 WATER_BLOCK = (5, 5)
@@ -158,6 +159,7 @@ class BotApp:
         dy = nxt[1] - current[1]
         # Orientierung: Blick nach Osten. w = vorwärts (x+), s = rückwärts (x-),
         # a = seitlich links/norden (y+), d = seitlich rechts/süden (y-).
+        # Facing east: w=forward (+x), s=back (-x), a=left/north (+y), d=right/south (-y).
         key = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
@@ -216,7 +218,8 @@ class BotApp:
         self.stop_button.config(state=tk.NORMAL)
 
         def on_press(key):
-            if isinstance(key, keyboard.KeyCode) and key.char and key.char.lower() == "m":
+            char = getattr(key, "char", None)
+            if isinstance(key, keyboard.KeyCode) and char and char.lower() == "m":
                 self.handle_stop()
                 return False
             return True
