@@ -27,7 +27,7 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
    ```powershell
    py bot.py
    ```
-8. Bei Rückfragen von Windows den Zugriff auf Tastatur/Maus erlauben; Stopp-Hotkey siehe Abschnitt [Nutzung](#nutzung), Schritt 5.
+8. Bei Rückfragen von Windows den Zugriff auf Tastatur/Maus erlauben; Stopp-Hotkey siehe Abschnitt [Nutzung](#nutzung), Schritt 5 (Taste **M**).
 
 ## Nutzung
 1. Starte Minecraft, stelle dich links unten am Feld auf (Position 0,1), schaue geradeaus und halte Kartoffeln in der Hand.
