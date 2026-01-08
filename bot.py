@@ -1,8 +1,9 @@
 import threading
 import time
 import tkinter as tk
-from tkinter import ttk, messagebox
 from collections import deque
+from typing import Iterator
+from tkinter import ttk, messagebox
 
 import pyautogui
 from pynput import keyboard
@@ -10,6 +11,7 @@ from pynput import keyboard
 
 pyautogui.FAILSAFE = True
 
+# Spieler steht links außerhalb des Feldes auf (0,1) und blickt auf (1,1).
 START_POS = (0, 1)
 GRID_SIZE = 9
 WATER_BLOCK = (5, 5)
@@ -197,7 +199,7 @@ class BotApp:
             cur = came_from[cur]
         return list(reversed(path))
 
-    def _neighbors(self, node: tuple[int, int]):
+    def _neighbors(self, node: tuple[int, int]) -> Iterator[tuple[int, int]]:
         x, y = node
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             nx, ny = x + dx, y + dy
