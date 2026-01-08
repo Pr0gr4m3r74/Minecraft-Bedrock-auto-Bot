@@ -162,7 +162,12 @@ class BotApp:
             if stripped.startswith("-"):
                 return False
             normalized = stripped.replace(" ", "")
-            name_part = re.split(r"[<>=!~\[]", normalized, maxsplit=1)[0].strip().lower()
+            if "://" in normalized or "@(" in normalized or "@git" in normalized:
+                return False
+            match = re.match(r"([A-Za-z0-9_.-]+)", normalized)
+            if not match:
+                return False
+            name_part = match.group(1).lower()
             if name_part not in allowed_names:
                 return False
         return True
@@ -206,6 +211,7 @@ class BotApp:
                 check=True,
                 shell=False,
                 timeout=300,
+                capture_output=True,
             )
         except subprocess.TimeoutExpired:
             self.root.after(
@@ -259,6 +265,7 @@ class BotApp:
                 check=True,
                 shell=False,
                 timeout=300,
+                capture_output=True,
             )
         except subprocess.TimeoutExpired:
             self.root.after(
