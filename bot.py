@@ -166,11 +166,13 @@ class BotApp:
 
     def _harvest_and_plant(self, break_time: float, replant_pause: float) -> None:
         pyautogui.mouseDown(button="left")
-        time.sleep(break_time)
+        if self.stop_event.wait(break_time):
+            pyautogui.mouseUp(button="left")
+            return
         pyautogui.mouseUp(button="left")
         pyautogui.click(button="right")
-        if replant_pause:
-            time.sleep(replant_pause)
+        if replant_pause and self.stop_event.wait(replant_pause):
+            return
 
     def _step_towards(self, current: tuple[int, int], nxt: tuple[int, int], step_time: float) -> None:
         dx = nxt[0] - current[0]
@@ -240,7 +242,7 @@ class BotApp:
         def on_press(key):
             char = getattr(key, "char", None)
             if isinstance(key, keyboard.KeyCode) and char and char.lower() == self.STOP_HOTKEY:
-                self.handle_stop()
+                self.root.after(0, self.handle_stop)
                 return False
             return True
 
