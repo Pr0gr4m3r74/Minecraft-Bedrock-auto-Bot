@@ -10,7 +10,7 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
   ```
 
 ## Windows 11: Download & Start
-1. [Python 3.10+ herunterladen](https://www.python.org/downloads/windows/) und bei der Installation **„Add Python to PATH“** anhaken.
+1. [Python 3.10+ herunterladen](https://www.python.org/downloads/) und bei der Installation **„Add Python to PATH“** anhaken.
 2. Dieses Projekt als ZIP herunterladen: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken.
 3. PowerShell im entpackten Ordner öffnen.
 4. (Optional) Virtuelle Umgebung anlegen und aktivieren:
@@ -22,7 +22,7 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
    ```powershell
    pip install -r requirements.txt
    ```
-6. Minecraft starten und wie im Abschnitt [Nutzung](#nutzung) an die Startposition stellen; das Fenster im Vordergrund lassen.
+6. Minecraft starten und wie in Abschnitt [Nutzung](#nutzung) (Schritte 1–2) positionieren; das Fenster im Vordergrund lassen.
 7. Bot starten:
    ```powershell
    py bot.py
