@@ -16,12 +16,12 @@ pyautogui.FAILSAFE = True
 START_POS = (0, 1)
 GRID_SIZE = 9
 WATER_BLOCK = (5, 5)
-# Koordinaten: x nimmt nach Osten zu, y nach Norden (Strafe links). / Coordinates:
-# x increases east, y increases north.
+# Koordinaten: x nimmt nach Osten zu, y nach Norden (seitliches Laufen nach links). / Coordinates:
+# x increases east, y increases north (strafe left).
 
 
 class BotApp:
-    MOVEMENT_KEYS = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}
+    DIRECTION_TO_KEY = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}
     LOOK_DOWN_RATIO = 0.25
 
     def __init__(self, root: tk.Tk) -> None:
@@ -162,11 +162,9 @@ class BotApp:
     def _step_towards(self, current: tuple[int, int], nxt: tuple[int, int], step_time: float) -> None:
         dx = nxt[0] - current[0]
         dy = nxt[1] - current[1]
-        # Orientierung: Blick nach Osten. w = vorwärts (x+), s = rückwärts (x-),
-        # a = seitlich links/norden (y+), d = seitlich rechts/süden (y-).
-        # Facing east with y increasing to the left/north:
-        # w=forward (+x), s=back (-x), a=left/north (+y), d=right/south (-y).
-        key = self.MOVEMENT_KEYS.get((dx, dy))
+        # Orientierung/Bearing: Blick nach Osten, y zeigt nach Norden.
+        # Facing east with y increasing to the left/north; mapping lives in DIRECTION_TO_KEY.
+        key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
             time.sleep(step_time)
