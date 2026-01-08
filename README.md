@@ -10,8 +10,8 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
   ```
 
 ## Windows 11: Download & Start
-1. [Python 3.10+ downloaden](https://www.python.org/downloads/windows/) und bei der Installation **„Add Python to PATH“** anhaken.
-2. Dieses Projekt als ZIP laden: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken.
+1. [Python 3.10+ herunterladen](https://www.python.org/downloads/windows/) und bei der Installation **„Add Python to PATH“** anhaken.
+2. Dieses Projekt als ZIP herunterladen: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken.
 3. PowerShell im entpackten Ordner öffnen.
 4. (Optional) Virtuelle Umgebung anlegen und aktivieren:
    ```powershell
