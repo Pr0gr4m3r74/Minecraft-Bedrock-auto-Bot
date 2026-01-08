@@ -9,6 +9,26 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
   pip install -r requirements.txt
   ```
 
+## Windows 11: Download & Start
+1. [Python 3.10+ herunterladen](https://www.python.org/downloads/windows/) und bei der Installation **„Add Python to PATH“** anhaken.
+2. Dieses Projekt als ZIP laden: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken.
+3. PowerShell im entpackten Ordner öffnen.
+4. (Optional) Virtuelle Umgebung anlegen und aktivieren:
+   ```powershell
+   py -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
+5. Abhängigkeiten installieren:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+6. Minecraft starten, an die beschriebene Startposition stellen und das Fenster im Vordergrund lassen.
+7. Bot starten:
+   ```powershell
+   py bot.py
+   ```
+8. Bei Rückfragen von Windows den Zugriff auf Tastatur/Maus erlauben; stoppen kannst du jederzeit mit der Taste **M**.
+
 ## Nutzung
 1. Starte Minecraft, stelle dich links unten am Feld auf (Position 0,1), schaue geradeaus und halte Kartoffeln in der Hand.
 2. Führe den Bot aus:
