@@ -159,9 +159,10 @@ class BotApp:
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
                 continue
-            if stripped.startswith("-") or " " in stripped:
+            if stripped.startswith("-"):
                 return False
-            name_part = re.split(r"[<>=!~\[]", stripped, maxsplit=1)[0].strip().lower()
+            normalized = stripped.replace(" ", "")
+            name_part = re.split(r"[<>=!~\[]", normalized, maxsplit=1)[0].strip().lower()
             if name_part not in allowed_names:
                 return False
         return True
@@ -200,7 +201,12 @@ class BotApp:
             self.root.after(0, lambda: self.status_var.set("Installation fehlgeschlagen"))
             return
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_path)], check=True)
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-r", str(requirements_path)],
+                check=True,
+                shell=False,
+                timeout=300,
+            )
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -240,7 +246,12 @@ class BotApp:
             self.root.after(0, lambda: self.status_var.set("Deinstallation fehlgeschlagen"))
             return
         try:
-            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-r", str(requirements_path)], check=True)
+            subprocess.run(
+                [sys.executable, "-m", "pip", "uninstall", "-y", "-r", str(requirements_path)],
+                check=True,
+                shell=False,
+                timeout=300,
+            )
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -332,12 +343,12 @@ class BotApp:
         if key:
             with self._ignore_stop_lock:
                 self._ignore_stop_keys.set()
-            try:
                 pyautogui.keyDown(key)
+            try:
                 self.stop_event.wait(step_time)
             finally:
-                pyautogui.keyUp(key)
                 with self._ignore_stop_lock:
+                    pyautogui.keyUp(key)
                     self._ignore_stop_keys.clear()
 
     def _traversal_order(self) -> list[tuple[int, int]]:
