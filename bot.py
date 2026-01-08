@@ -1,3 +1,4 @@
+import re
 import subprocess
 import sys
 import threading
@@ -149,7 +150,7 @@ class BotApp:
         return Path(__file__).with_name("requirements.txt")
 
     def _requirements_valid(self, path: Path) -> bool:
-        allowed_prefixes = ("pyautogui", "pynput")
+        allowed_names = {"pyautogui", "pynput"}
         try:
             lines = path.read_text(encoding="utf-8").splitlines()
         except OSError:
@@ -158,7 +159,10 @@ class BotApp:
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
                 continue
-            if not stripped.lower().startswith(allowed_prefixes):
+            if stripped.startswith("-") or " " in stripped:
+                return False
+            name_part = re.split(r"[<>=!~\[]", stripped, maxsplit=1)[0].strip().lower()
+            if name_part not in allowed_names:
                 return False
         return True
 
