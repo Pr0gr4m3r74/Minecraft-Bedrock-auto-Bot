@@ -37,6 +37,7 @@ class BotApp:
         self.countdown_job = None
         self.status_var = tk.StringVar(value="Bereit")
         self._ignore_stop_keys = threading.Event()
+        self._ignore_stop_lock = threading.Lock()
 
         self.countdown_var = tk.StringVar(value="3")
         self.break_time_var = tk.StringVar(value="0.6")
@@ -147,6 +148,20 @@ class BotApp:
     def _requirements_path(self) -> Path:
         return Path(__file__).with_name("requirements.txt")
 
+    def _requirements_valid(self, path: Path) -> bool:
+        allowed_prefixes = ("pyautogui", "pynput")
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return False
+        for line in lines:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            if not stripped.lower().startswith(allowed_prefixes):
+                return False
+        return True
+
     def handle_install(self) -> None:
         self.status_var.set("Installiere Abhängigkeiten ...")
         threading.Thread(target=self._run_install, daemon=True).start()
@@ -167,6 +182,15 @@ class BotApp:
                 0,
                 lambda: messagebox.showerror(
                     "Installation fehlgeschlagen", f"requirements.txt nicht gefunden unter {requirements_path}"
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Installation fehlgeschlagen"))
+            return
+        if not self._requirements_valid(requirements_path):
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Installation fehlgeschlagen", "requirements.txt enthält nicht erlaubte Einträge."
                 ),
             )
             self.root.after(0, lambda: self.status_var.set("Installation fehlgeschlagen"))
@@ -198,6 +222,15 @@ class BotApp:
                 0,
                 lambda: messagebox.showerror(
                     "Deinstallation fehlgeschlagen", f"requirements.txt nicht gefunden unter {requirements_path}"
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Deinstallation fehlgeschlagen"))
+            return
+        if not self._requirements_valid(requirements_path):
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Deinstallation fehlgeschlagen", "requirements.txt enthält nicht erlaubte Einträge."
                 ),
             )
             self.root.after(0, lambda: self.status_var.set("Deinstallation fehlgeschlagen"))
@@ -293,13 +326,15 @@ class BotApp:
         # Facing east with y increasing to the left/north; mapping lives in DIRECTION_TO_KEY.
         key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
-            self._ignore_stop_keys.set()
+            with self._ignore_stop_lock:
+                self._ignore_stop_keys.set()
             try:
                 pyautogui.keyDown(key)
                 self.stop_event.wait(step_time)
             finally:
                 pyautogui.keyUp(key)
-                self._ignore_stop_keys.clear()
+                with self._ignore_stop_lock:
+                    self._ignore_stop_keys.clear()
 
     def _traversal_order(self) -> list[tuple[int, int]]:
         order: list[tuple[int, int]] = []
@@ -356,8 +391,9 @@ class BotApp:
             self.listener = None
 
         def on_press(key):
-            if self._ignore_stop_keys.is_set():
-                return True
+            with self._ignore_stop_lock:
+                if self._ignore_stop_keys.is_set():
+                    return True
             self.root.after(0, self.handle_stop)
             return False
 
