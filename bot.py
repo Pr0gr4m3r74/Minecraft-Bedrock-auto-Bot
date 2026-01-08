@@ -1,9 +1,12 @@
+import subprocess
+import sys
 import threading
 import time
 import tkinter as tk
 from collections import deque
+from pathlib import Path
 from typing import Iterator
-from tkinter import ttk, messagebox
+from tkinter import messagebox, ttk
 
 import pyautogui
 from pynput import keyboard
@@ -34,6 +37,7 @@ class BotApp:
         self.worker = None
         self.countdown_job = None
         self.status_var = tk.StringVar(value="Bereit")
+        self._ignore_stop_keys = False
 
         self.countdown_var = tk.StringVar(value="3")
         self.break_time_var = tk.StringVar(value="0.6")
@@ -41,6 +45,7 @@ class BotApp:
         self.replant_pause_var = tk.StringVar(value="0.1")
 
         self._build_ui()
+        self.root.after(200, self._show_welcome_instructions)
 
     def _build_ui(self) -> None:
         frame = ttk.Frame(self.root, padding=12)
@@ -70,13 +75,34 @@ class BotApp:
         self.start_button = ttk.Button(btn_frame, text="Start", command=self.handle_start)
         self.start_button.grid(row=0, column=0, padx=(0, 8))
 
-        self.stop_button = ttk.Button(btn_frame, text="Stopp (Taste M)", command=self.handle_stop, state=tk.DISABLED)
+        self.stop_button = ttk.Button(
+            btn_frame, text="Stopp (beliebige Taste)", command=self.handle_stop, state=tk.DISABLED
+        )
         self.stop_button.grid(row=0, column=1)
 
         status_frame = ttk.Frame(frame)
         status_frame.grid(row=5, column=0, columnspan=2, pady=(12, 0), sticky="ew")
         ttk.Label(status_frame, text="Status:").grid(row=0, column=0, sticky="w")
         ttk.Label(status_frame, textvariable=self.status_var).grid(row=0, column=1, sticky="w", padx=(4, 0))
+
+        instructions = (
+            "Windows 11 Komplett-Kit:\n"
+            "1) „Installieren“ lädt alle benötigten Pakete.\n"
+            "2) Minecraft ins Vordergrundfenster bringen und „Start“ drücken.\n"
+            "3) Jede beliebige Taste (oder der Stopp-Button) beendet den Algorithmus sofort.\n"
+            "4) Zum Entfernen „Deinstallieren“ drücken und danach diesen Ordner löschen."
+        )
+        ttk.Label(frame, text="Anleitung", font=("", 10, "bold")).grid(
+            row=6, column=0, columnspan=2, sticky="w", pady=(12, 2)
+        )
+        ttk.Label(frame, text=instructions, wraplength=360, justify="left").grid(
+            row=7, column=0, columnspan=2, sticky="w"
+        )
+
+        install_frame = ttk.Frame(frame)
+        install_frame.grid(row=8, column=0, columnspan=2, pady=(10, 0))
+        ttk.Button(install_frame, text="Installieren", command=self.handle_install).grid(row=0, column=0, padx=(0, 8))
+        ttk.Button(install_frame, text="Deinstallieren", command=self.handle_uninstall).grid(row=0, column=1)
 
     def handle_start(self) -> None:
         if self.worker and self.worker.is_alive():
@@ -108,6 +134,72 @@ class BotApp:
         if self.countdown_job:
             self.root.after_cancel(self.countdown_job)
             self.countdown_job = None
+
+    def _show_welcome_instructions(self) -> None:
+        message = (
+            "Windows 11 Komplett-Kit\n\n"
+            "1) Klicke auf „Installieren“, damit das Programm alle Abhängigkeiten selbst lädt.\n"
+            "2) Starte Minecraft und halte das Fenster im Vordergrund.\n"
+            "3) Drücke „Start“ – der Bot läuft, bis du irgendeine Taste drückst oder „Stopp“ wählst.\n"
+            "4) Für eine saubere Deinstallation auf „Deinstallieren“ klicken und anschließend diesen Ordner löschen."
+        )
+        messagebox.showinfo("Anleitung", message)
+
+    def handle_install(self) -> None:
+        self.status_var.set("Installiere Abhängigkeiten ...")
+        threading.Thread(target=self._run_install, daemon=True).start()
+
+    def handle_uninstall(self) -> None:
+        if not messagebox.askyesno(
+            "Deinstallieren",
+            "Dadurch werden die benötigten Pakete entfernt. Danach kannst du diesen Ordner einfach löschen.\nFortfahren?",
+        ):
+            return
+        self.status_var.set("Deinstallation läuft ...")
+        threading.Thread(target=self._run_uninstall, daemon=True).start()
+
+    def _run_install(self) -> None:
+        requirements_path = str(Path(__file__).with_name("requirements.txt"))
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", requirements_path], check=True)
+        except subprocess.CalledProcessError as exc:
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Installation fehlgeschlagen", f"Pakete konnten nicht installiert werden:\n{exc}"
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Installation fehlgeschlagen"))
+        else:
+            self.root.after(0, lambda: self.status_var.set("Abhängigkeiten installiert"))
+            self.root.after(
+                0,
+                lambda: messagebox.showinfo(
+                    "Installation abgeschlossen",
+                    "Alles bereit. Minecraft in den Vordergrund holen und auf Start drücken.",
+                ),
+            )
+
+    def _run_uninstall(self) -> None:
+        requirements_path = str(Path(__file__).with_name("requirements.txt"))
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-r", requirements_path], check=True)
+        except subprocess.CalledProcessError as exc:
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Deinstallation fehlgeschlagen", f"Pakete konnten nicht entfernt werden:\n{exc}"
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Deinstallation fehlgeschlagen"))
+        else:
+            self.root.after(0, lambda: self.status_var.set("Deinstallation abgeschlossen"))
+            self.root.after(
+                0,
+                lambda: messagebox.showinfo(
+                    "Deinstallation abgeschlossen", "Pakete entfernt. Zum Aufräumen den Ordner löschen."
+                ),
+            )
 
     def _start_countdown(self, seconds: float, break_time: float, step_time: float, replant_pause: float) -> None:
         end_time = time.time() + seconds
@@ -181,11 +273,15 @@ class BotApp:
         # Facing east with y increasing to the left/north; mapping lives in DIRECTION_TO_KEY.
         key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
+            self._ignore_stop_keys = True
             pyautogui.keyDown(key)
+            self._ignore_stop_keys = False
             try:
                 self.stop_event.wait(step_time)
             finally:
+                self._ignore_stop_keys = True
                 pyautogui.keyUp(key)
+                self._ignore_stop_keys = False
 
     def _traversal_order(self) -> list[tuple[int, int]]:
         order: list[tuple[int, int]] = []
@@ -242,11 +338,10 @@ class BotApp:
             self.listener = None
 
         def on_press(key):
-            char = getattr(key, "char", None)
-            if isinstance(key, keyboard.KeyCode) and char and char.lower() == self.STOP_HOTKEY:
-                self.root.after(0, self.handle_stop)
-                return False
-            return True
+            if self._ignore_stop_keys:
+                return True
+            self.root.after(0, self.handle_stop)
+            return False
 
         self.listener = keyboard.Listener(on_press=on_press, suppress=False)
         self.listener.start()

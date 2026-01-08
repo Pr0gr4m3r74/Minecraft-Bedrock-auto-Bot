@@ -12,25 +12,14 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
 ## Startposition / Starting Position
 Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Feld und halte Kartoffeln in der Hand.
 
-## Windows 11: Download & Start
+## Windows 11: Komplett-Kit (Download, Installation, Deinstallation)
 1. [Python 3.10+ herunterladen](https://www.python.org/downloads/) und bei der Installation **"Add Python to PATH"** anhaken.
-2. Dieses Projekt als ZIP herunterladen: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken.
-3. PowerShell im entpackten Ordner öffnen.
-4. (Optional) Virtuelle Umgebung anlegen und aktivieren:
-   ```powershell
-   py -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
-5. Abhängigkeiten installieren:
-   ```powershell
-   pip install -r requirements.txt
-   ```
-6. Minecraft starten, gemäß Abschnitt [Startposition](#startposition--starting-position) aufstellen und das Fenster im Vordergrund lassen.
-7. Bot starten:
-   ```powershell
-   py bot.py
-   ```
-8. Bei Rückfragen von Windows den Zugriff auf Tastatur/Maus erlauben; Stopp-Hotkey: Taste **M** (oder der **Stopp**-Button im Fenster).
+2. Dieses Projekt als ZIP herunterladen: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken (ein Ordner genügt).
+3. `bot.py` per Doppelklick oder `py bot.py` starten – das Fenster zeigt sofort eine Schritt-für-Schritt-Anleitung.
+4. Im Fenster auf **Installieren** klicken: Die benötigten Pakete werden automatisch installiert.
+5. Minecraft starten, gemäß Abschnitt [Startposition](#startposition--starting-position) aufstellen und das Fenster im Vordergrund lassen.
+6. Im Bot-Fenster **Start** drücken. Der Bot läuft, bis du irgendeine Taste drückst oder den **Stopp**-Button nutzt.
+7. Deinstallation: Im Bot-Fenster **Deinstallieren** drücken, danach den entpackten Ordner löschen. Damit bleiben keine Reste zurück.
 
 ## Nutzung
 1. Starte Minecraft und stelle dich wie in [Startposition](#startposition--starting-position) beschrieben auf.
@@ -38,14 +27,15 @@ Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Fel
    ```bash
    python bot.py
    ```
-3. Trage bei Bedarf Zeiten an:
+3. Klicke bei Bedarf im Fenster auf **Installieren**, falls die Abhängigkeiten noch fehlen.
+4. Trage bei Bedarf Zeiten an:
    * Countdown vor Start (Standard 3 s)
    * Haltedauer zum Abbauen
    * Schritt-Dauer je Block
    * kurze Pause nach dem Pflanzen
-4. Klicke **Start**. Ein Countdown läuft, dann wird automatisch:
+5. Klicke **Start**. Ein Countdown läuft, dann wird automatisch:
    * nach unten geschaut,
    * jeder Acker-Block (außer Wasser bei 5,5) abgebaut,
    * sofort wieder eine Kartoffel gepflanzt,
    * blockweise in Schlangenlinien über das Feld gelaufen, inklusive Rückweg zur Startposition.
-5. Mit der Taste **M** (oder dem **Stopp**-Button) wird der Bot sofort unterbrochen.
+6. Eine **beliebige Taste** (oder der **Stopp**-Button) unterbricht den Bot sofort.
