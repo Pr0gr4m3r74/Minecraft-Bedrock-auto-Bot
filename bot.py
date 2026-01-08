@@ -171,7 +171,7 @@ class BotApp:
             return
         pyautogui.mouseUp(button="left")
         pyautogui.click(button="right")
-        if replant_pause and self.stop_event.wait(replant_pause):
+        if self.stop_event.wait(replant_pause):
             return
 
     def _step_towards(self, current: tuple[int, int], nxt: tuple[int, int], step_time: float) -> None:
@@ -182,8 +182,10 @@ class BotApp:
         key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
-            self.stop_event.wait(step_time)
-            pyautogui.keyUp(key)
+            try:
+                self.stop_event.wait(step_time)
+            finally:
+                pyautogui.keyUp(key)
 
     def _traversal_order(self) -> list[tuple[int, int]]:
         order: list[tuple[int, int]] = []
