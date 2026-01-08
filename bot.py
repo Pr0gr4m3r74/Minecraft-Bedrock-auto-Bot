@@ -90,6 +90,12 @@ class BotApp:
             messagebox.showerror("Fehler", "Bitte gültige Zahlen eingeben.")
             return
 
+        if not messagebox.askokcancel(
+            "Warnung",
+            "Der Bot übernimmt Tastatur und Maus. Stelle sicher, dass Minecraft im Vordergrund ist.",
+        ):
+            return
+
         self._toggle_controls(disabled=True)
         self.stop_event.clear()
         self.status_var.set(f"Countdown {countdown:.1f}s ...")
@@ -133,11 +139,16 @@ class BotApp:
         try:
             self._look_down()
             order = self._traversal_order()
+            paths = []
             position = START_POS
             for target in order:
+                paths.append(self._path_between(position, target))
+                position = target
+
+            position = START_POS
+            for path, target in zip(paths, order):
                 if self.stop_event.is_set():
                     break
-                path = self._path_between(position, target)
                 for step in path[1:]:
                     if self.stop_event.is_set():
                         break
@@ -222,6 +233,9 @@ class BotApp:
 
     def _start_hotkey_listener(self) -> None:
         self.stop_button.config(state=tk.NORMAL)
+        if self.listener:
+            self.listener.stop()
+            self.listener = None
 
         def on_press(key):
             char = getattr(key, "char", None)
