@@ -9,7 +9,7 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
   pip install -r requirements.txt
   ```
 
-## Startposition
+## Startposition (Starting position)
 Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Feld und halte Kartoffeln in der Hand.
 
 ## Windows 11: Download & Start
@@ -25,7 +25,7 @@ Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Fel
    ```powershell
    pip install -r requirements.txt
    ```
-6. Minecraft starten, gemäß Abschnitt [Startposition](#startposition) aufstellen und das Fenster im Vordergrund lassen.
+6. Minecraft starten, gemäß Abschnitt [Startposition](#startposition-starting-position) aufstellen und das Fenster im Vordergrund lassen.
 7. Bot starten:
    ```powershell
    py bot.py
@@ -33,7 +33,7 @@ Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Fel
 8. Bei Rückfragen von Windows den Zugriff auf Tastatur/Maus erlauben; Stopp-Hotkey: Taste **M** (oder der **Stopp**-Button im Fenster).
 
 ## Nutzung
-1. Starte Minecraft und stelle dich wie in [Startposition](#startposition) beschrieben auf.
+1. Starte Minecraft und stelle dich wie in [Startposition](#startposition-starting-position) beschrieben auf.
 2. Führe den Bot aus:
    ```bash
    python bot.py
