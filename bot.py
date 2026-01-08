@@ -154,15 +154,9 @@ class BotApp:
     def _step_towards(self, current: tuple[int, int], nxt: tuple[int, int], step_time: float) -> None:
         dx = nxt[0] - current[0]
         dy = nxt[1] - current[1]
-        key = None
-        if dx == 1 and dy == 0:
-            key = "w"
-        elif dx == -1 and dy == 0:
-            key = "s"
-        elif dx == 0 and dy == 1:
-            key = "a"
-        elif dx == 0 and dy == -1:
-            key = "d"
+        # Orientierung: Blick nach Osten. w = vorwärts (x+), s = rückwärts (x-),
+        # a = seitlich links/norden (y+), d = seitlich rechts/süden (y-).
+        key = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
             time.sleep(step_time)
@@ -212,8 +206,9 @@ class BotApp:
                     yield nx, ny
 
     def _look_down(self) -> None:
-        screen_center = pyautogui.size()
-        pyautogui.moveRel(0, screen_center.height * 0.25, duration=0.2)
+        width, height = pyautogui.size()
+        pyautogui.moveTo(width / 2, height / 2)
+        pyautogui.moveRel(0, height * 0.25, duration=0.2)
 
     def _start_hotkey_listener(self) -> None:
         self.stop_button.config(state=tk.NORMAL)
