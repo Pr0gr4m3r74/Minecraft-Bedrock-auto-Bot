@@ -23,6 +23,8 @@ WATER_BLOCK = (5, 5)
 class BotApp:
     DIRECTION_TO_KEY = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}
     LOOK_DOWN_RATIO = 0.25
+    STOP_HOTKEY = "m"
+    STATUS_DONE_PREFIX = "Fertig"
 
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
@@ -146,7 +148,7 @@ class BotApp:
                 if position != START_POS:
                     self._harvest_and_plant(break_time, replant_pause)
             if not self.stop_event.is_set():
-                self.status_var.set("Fertig - zurück an Ausgangsposition")
+                self.status_var.set(f"{self.STATUS_DONE_PREFIX} - zurück an Ausgangsposition")
         finally:
             stopped = self.stop_event.is_set()
             self.root.after(0, lambda: self._cleanup_after_run(stopped))
@@ -223,7 +225,7 @@ class BotApp:
 
         def on_press(key):
             char = getattr(key, "char", None)
-            if isinstance(key, keyboard.KeyCode) and char and char.lower() == "m":
+            if isinstance(key, keyboard.KeyCode) and char and char.lower() == self.STOP_HOTKEY:
                 self.handle_stop()
                 return False
             return True
@@ -240,7 +242,7 @@ class BotApp:
             self.listener.stop()
             self.listener = None
         self._toggle_controls(disabled=False)
-        if stopped and not self.status_var.get().startswith("Fertig"):
+        if stopped and not self.status_var.get().startswith(self.STATUS_DONE_PREFIX):
             self.status_var.set("Bereit")
 
     def _toggle_controls(self, disabled: bool) -> None:
