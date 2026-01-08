@@ -26,7 +26,6 @@ WATER_BLOCK = (5, 5)
 class BotApp:
     DIRECTION_TO_KEY = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}
     LOOK_DOWN_RATIO = 0.25
-    STOP_HOTKEY = "m"
     STATUS_DONE_PREFIX = "Fertig"
 
     def __init__(self, root: tk.Tk) -> None:
@@ -145,8 +144,8 @@ class BotApp:
         )
         messagebox.showinfo("Anleitung", message)
 
-    def _requirements_path(self) -> str:
-        return str(Path(__file__).with_name("requirements.txt"))
+    def _requirements_path(self) -> Path:
+        return Path(__file__).with_name("requirements.txt")
 
     def handle_install(self) -> None:
         self.status_var.set("Installiere Abhängigkeiten ...")
@@ -162,8 +161,18 @@ class BotApp:
         threading.Thread(target=self._run_uninstall, daemon=True).start()
 
     def _run_install(self) -> None:
+        requirements_path = self._requirements_path()
+        if not requirements_path.is_file():
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Installation fehlgeschlagen", f"requirements.txt nicht gefunden unter {requirements_path}"
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Installation fehlgeschlagen"))
+            return
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "-r", self._requirements_path()], check=True)
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_path)], check=True)
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -183,8 +192,18 @@ class BotApp:
             )
 
     def _run_uninstall(self) -> None:
+        requirements_path = self._requirements_path()
+        if not requirements_path.is_file():
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Deinstallation fehlgeschlagen", f"requirements.txt nicht gefunden unter {requirements_path}"
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Deinstallation fehlgeschlagen"))
+            return
         try:
-            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-r", self._requirements_path()], check=True)
+            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-r", str(requirements_path)], check=True)
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -275,12 +294,10 @@ class BotApp:
         key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
             self._ignore_stop_keys.set()
-            pyautogui.keyDown(key)
-            self._ignore_stop_keys.clear()
             try:
+                pyautogui.keyDown(key)
                 self.stop_event.wait(step_time)
             finally:
-                self._ignore_stop_keys.set()
                 pyautogui.keyUp(key)
                 self._ignore_stop_keys.clear()
 
