@@ -37,7 +37,7 @@ class BotApp:
         self.worker = None
         self.countdown_job = None
         self.status_var = tk.StringVar(value="Bereit")
-        self._ignore_stop_keys = False
+        self._ignore_stop_keys = threading.Event()
 
         self.countdown_var = tk.StringVar(value="3")
         self.break_time_var = tk.StringVar(value="0.6")
@@ -145,6 +145,9 @@ class BotApp:
         )
         messagebox.showinfo("Anleitung", message)
 
+    def _requirements_path(self) -> str:
+        return str(Path(__file__).with_name("requirements.txt"))
+
     def handle_install(self) -> None:
         self.status_var.set("Installiere Abhängigkeiten ...")
         threading.Thread(target=self._run_install, daemon=True).start()
@@ -159,9 +162,8 @@ class BotApp:
         threading.Thread(target=self._run_uninstall, daemon=True).start()
 
     def _run_install(self) -> None:
-        requirements_path = str(Path(__file__).with_name("requirements.txt"))
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install", "-r", requirements_path], check=True)
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", self._requirements_path()], check=True)
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -181,9 +183,8 @@ class BotApp:
             )
 
     def _run_uninstall(self) -> None:
-        requirements_path = str(Path(__file__).with_name("requirements.txt"))
         try:
-            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-r", requirements_path], check=True)
+            subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-r", self._requirements_path()], check=True)
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -273,15 +274,15 @@ class BotApp:
         # Facing east with y increasing to the left/north; mapping lives in DIRECTION_TO_KEY.
         key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
-            self._ignore_stop_keys = True
+            self._ignore_stop_keys.set()
             pyautogui.keyDown(key)
-            self._ignore_stop_keys = False
+            self._ignore_stop_keys.clear()
             try:
                 self.stop_event.wait(step_time)
             finally:
-                self._ignore_stop_keys = True
+                self._ignore_stop_keys.set()
                 pyautogui.keyUp(key)
-                self._ignore_stop_keys = False
+                self._ignore_stop_keys.clear()
 
     def _traversal_order(self) -> list[tuple[int, int]]:
         order: list[tuple[int, int]] = []
@@ -338,7 +339,7 @@ class BotApp:
             self.listener = None
 
         def on_press(key):
-            if self._ignore_stop_keys:
+            if self._ignore_stop_keys.is_set():
                 return True
             self.root.after(0, self.handle_stop)
             return False
