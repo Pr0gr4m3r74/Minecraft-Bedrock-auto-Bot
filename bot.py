@@ -19,6 +19,9 @@ WATER_BLOCK = (5, 5)
 
 
 class BotApp:
+    MOVEMENT_KEYS = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}
+    LOOK_DOWN_RATIO = 0.25
+
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.root.title("Minecraft Bedrock Auto Bot")
@@ -160,7 +163,7 @@ class BotApp:
         # Orientierung: Blick nach Osten. w = vorwärts (x+), s = rückwärts (x-),
         # a = seitlich links/norden (y+), d = seitlich rechts/süden (y-).
         # Facing east: w=forward (+x), s=back (-x), a=left/north (+y), d=right/south (-y).
-        key = {(1, 0): "w", (-1, 0): "s", (0, 1): "a", (0, -1): "d"}.get((dx, dy))
+        key = self.MOVEMENT_KEYS.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
             time.sleep(step_time)
@@ -212,7 +215,7 @@ class BotApp:
     def _look_down(self) -> None:
         width, height = pyautogui.size()
         pyautogui.moveTo(width / 2, height / 2)
-        pyautogui.moveRel(0, height * 0.25, duration=0.2)
+        pyautogui.moveRel(0, height * self.LOOK_DOWN_RATIO, duration=0.2)
 
     def _start_hotkey_listener(self) -> None:
         self.stop_button.config(state=tk.NORMAL)
