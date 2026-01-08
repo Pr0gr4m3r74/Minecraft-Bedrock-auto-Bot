@@ -16,6 +16,8 @@ pyautogui.FAILSAFE = True
 START_POS = (0, 1)
 GRID_SIZE = 9
 WATER_BLOCK = (5, 5)
+# Koordinaten: x nimmt nach Osten zu, y nach Norden (Strafe links). / Coordinates:
+# x increases east, y increases north.
 
 
 class BotApp:
@@ -162,7 +164,8 @@ class BotApp:
         dy = nxt[1] - current[1]
         # Orientierung: Blick nach Osten. w = vorwärts (x+), s = rückwärts (x-),
         # a = seitlich links/norden (y+), d = seitlich rechts/süden (y-).
-        # Facing east: w=forward (+x), s=back (-x), a=left/north (+y), d=right/south (-y).
+        # Facing east with y increasing to the left/north:
+        # w=forward (+x), s=back (-x), a=left/north (+y), d=right/south (-y).
         key = self.MOVEMENT_KEYS.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
