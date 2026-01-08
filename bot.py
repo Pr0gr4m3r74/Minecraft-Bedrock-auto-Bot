@@ -182,7 +182,7 @@ class BotApp:
         key = self.DIRECTION_TO_KEY.get((dx, dy))
         if key:
             pyautogui.keyDown(key)
-            time.sleep(step_time)
+            self.stop_event.wait(step_time)
             pyautogui.keyUp(key)
 
     def _traversal_order(self) -> list[tuple[int, int]]:
