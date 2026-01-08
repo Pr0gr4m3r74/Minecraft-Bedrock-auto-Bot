@@ -30,7 +30,6 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
 8. Bei Rückfragen von Windows den Zugriff auf Tastatur/Maus erlauben; Stopp-Hotkey siehe Abschnitt „Nutzung“.
 
 ## Nutzung
-**Stopp-Hotkey:** Taste **M** (alternativ der **Stopp**-Button im Fenster).
 1. Starte Minecraft, stelle dich links unten am Feld auf (Position 0,1), schaue geradeaus und halte Kartoffeln in der Hand.
 2. Führe den Bot aus:
    ```bash
