@@ -207,6 +207,14 @@ class BotApp:
                 shell=False,
                 timeout=300,
             )
+        except subprocess.TimeoutExpired:
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Installation fehlgeschlagen", "Paketinstallation hat zu lange gedauert (Timeout)."
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Installation fehlgeschlagen"))
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
@@ -252,6 +260,14 @@ class BotApp:
                 shell=False,
                 timeout=300,
             )
+        except subprocess.TimeoutExpired:
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Deinstallation fehlgeschlagen", "Paket-Deinstallation hat zu lange gedauert (Timeout)."
+                ),
+            )
+            self.root.after(0, lambda: self.status_var.set("Deinstallation fehlgeschlagen"))
         except subprocess.CalledProcessError as exc:
             self.root.after(
                 0,
