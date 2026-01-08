@@ -22,7 +22,7 @@ Ein kleines Desktop-Tool (kein Client-Hack, keine Injection), das über Tastatur
    ```powershell
    pip install -r requirements.txt
    ```
-6. Minecraft starten und wie in Abschnitt [Nutzung](#nutzung) (Schritte 1-2) positionieren; das Fenster im Vordergrund lassen.
+6. Minecraft starten und wie in Abschnitt [Nutzung](#nutzung), Schritt 1 positionieren; das Fenster im Vordergrund lassen.
 7. Bot starten:
    ```powershell
    py bot.py
