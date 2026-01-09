@@ -16,7 +16,10 @@ Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Fel
 ## Windows 11: Komplett-Kit (Download, Installation, Deinstallation)
 1. [Python 3.10+ herunterladen](https://www.python.org/downloads/) und bei der Installation **"Add Python to PATH"** anhaken.
 2. Dieses Projekt als ZIP herunterladen: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken (ein Ordner genügt).
-3. `bot.py` per Doppelklick (mit zugeordnetem Python 3.10+) oder im Terminal mit `py -3.10 bot.py`/`python bot.py` starten – das Fenster zeigt sofort eine Schritt-für-Schritt-Anleitung.
+3. `bot.py` starten:
+   * per Doppelklick (mit zugeordnetem Python 3.10+), oder
+   * im Terminal mit `py -3.10 bot.py` / `python bot.py`.
+   Das Fenster zeigt sofort eine Schritt-für-Schritt-Anleitung.
 4. Im Fenster auf **Installieren** klicken: Die benötigten Pakete werden automatisch installiert.
 5. Minecraft starten, gemäß Abschnitt [Startposition](#startposition--starting-position) aufstellen und das Fenster im Vordergrund lassen.
 6. Im Bot-Fenster **Start** drücken. Der Bot läuft, bis du irgendeine Taste drückst oder den **Stopp**-Button nutzt.
