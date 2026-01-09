@@ -18,7 +18,7 @@ Stelle dich links unten am Feld auf Position (0,1), schaue geradeaus auf das Fel
 2. Dieses Projekt als ZIP herunterladen: Auf GitHub oben rechts auf **Code → Download ZIP** klicken und die Datei entpacken (ein Ordner genügt).
 3. `bot.py` starten:
    * per Doppelklick (mit zugeordnetem Python 3.10+), oder
-   * im Terminal mit `py -3.10 bot.py` / `python bot.py`.
+   * im Terminal mit `py -3.10 bot.py` (Windows) oder `python3.10 bot.py` / `python bot.py`.
    Das Fenster zeigt sofort eine Schritt-für-Schritt-Anleitung.
 4. Im Fenster auf **Installieren** klicken: Die benötigten Pakete werden automatisch installiert.
 5. Minecraft starten, gemäß Abschnitt [Startposition](#startposition--starting-position) aufstellen und das Fenster im Vordergrund lassen.
