@@ -1,8 +1,9 @@
-from __future__ import annotations
+import sys
+if sys.version_info < (3, 10):
+    raise SystemExit("Python 3.10 oder höher erforderlich. Bitte mit aktueller Version starten.")
 
 import re
 import subprocess
-import sys
 import threading
 import time
 import tkinter as tk
@@ -10,9 +11,6 @@ from collections import deque
 from pathlib import Path
 from typing import Iterator
 from tkinter import messagebox, ttk
-
-if sys.version_info < (3, 10):
-    raise SystemExit("Python 3.10 oder höher erforderlich. Bitte mit aktueller Version starten.")
 
 import pyautogui
 from pynput import keyboard
