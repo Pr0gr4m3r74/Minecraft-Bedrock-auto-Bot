@@ -1,6 +1,9 @@
+import sys
+if sys.version_info < (3, 10):
+    raise SystemExit("Python 3.10 oder höher erforderlich. Bitte mit aktueller Version starten.")
+
 import re
 import subprocess
-import sys
 import threading
 import time
 import tkinter as tk
