@@ -1,11 +1,13 @@
 # Minecraft Bedrock Auto Bot
 
-A small Windows desktop tool (no client hack, no injection) that automates
-harvesting and replanting crops on a 9×9 farm in Minecraft Bedrock Edition
-using simulated keyboard and mouse input (Win32 `SendInput`).
+A Windows desktop tool (no client hack, no injection) that automates
+harvesting and replanting crops on a configurable rectangular farm in
+Minecraft Bedrock Edition using simulated keyboard and mouse input
+(Win32 `SendInput`).
 
-The farm has a water block in the centre at **(5, 5)** which the bot navigates
-around using BFS pathfinding.
+A finite-state machine drives each farming phase, and an exchangeable
+OCR backend allows coordinate-based position validation when a real OCR
+engine (e.g. Tesseract) is plugged in.
 
 ---
 
@@ -15,7 +17,7 @@ around using BFS pathfinding.
 * **Visual Studio 2022** with the *Desktop development with C++* workload
 * **CMake 3.20+** (bundled with Visual Studio 2022)
 
-No Python or third-party libraries are required. The application is a
+No Python or third-party libraries are required.  The application is a
 self-contained Win32 executable.
 
 ---
@@ -32,28 +34,51 @@ See **[BUILD.md](BUILD.md)** for full build and usage instructions.
 
 ---
 
-## Starting position
+## GUI controls
 
-Stand just left of the field at position **(0, 1)**, facing **East** into the
-field, with the crop item (e.g. potatoes) in the active hotbar slot.
+| Field | Description | Default |
+|---|---|---|
+| Farm-Breite | Farm width in blocks (columns) | 9 |
+| Farm-Hoehe | Farm height in blocks (rows) | 9 |
+| Block-Delay | Seconds to hold movement key per block | 0.25 |
+| Abbau-Haltedauer | Seconds to hold LMB while breaking a crop | 0.6 |
+| Pause nach Pflanzen | Pause after right-clicking to plant | 0.1 |
+| Wartezeit Wachstum | Seconds to wait for crops to grow (0 = skip) | 300 |
+| Reset-Intervall | Rows between safe-point returns (0 = off) | 9 |
+| Start/Stop-Hotkey | Global hotkey to toggle the bot (e.g. F6) | F6 |
+| Countdown | Seconds before the bot starts | 3 |
 
 ---
 
-## Usage
+## State machine
 
-1. Build and run `MinecraftBedrockAutoBot.exe`.
-2. Start Minecraft and keep its window in the foreground.
-3. Set the desired timing values in the bot window:
-   * **Countdown** – seconds before the bot starts (default 3 s).
-   * **Abbau-Haltedauer** – how long to hold LMB to break a crop (default 0.6 s).
-   * **Schritt-Dauer** – how long to hold a movement key per grid cell (default 0.25 s).
-   * **Pause nach Pflanzen** – pause after right-clicking to plant (default 0.1 s).
-4. Click **Start**. After the countdown the bot will:
-   * Tilt the camera down toward the ground.
-   * Walk every cell in a snake pattern (skipping the water block at 5, 5).
-   * Hold **LMB** to break each crop, then **RMB** to replant.
-   * Return to the start position.
-5. Press **any key** or click **Stopp** to stop immediately.
+The bot transitions through the following states:
+
+| State | Description |
+|---|---|
+| **Leerlauf** (Idle) | Bot not running |
+| **Position pruefen** (ResetPosition) | Verify / navigate back to saved origin |
+| **Zur Reihe** (MoveToRowStart) | Travel to the first cell of the next row |
+| **Reihe ernten** (FarmRow) | Harvest and replant every cell in the row |
+| **Zum Ursprung** (ReturnToOrigin) | Return to origin after reset interval or full cycle |
+| **Warten auf Wachstum** (WaitForGrowth) | Timer wait for crops to mature |
+| **Fehlerkorrektur** (ErrorRecovery) | Handle unexpected state; stop safely |
+
+---
+
+## Coordinate validation (optional)
+
+The bot uses two pluggable interfaces:
+
+* **IScreenCapture** – captures the F3 debug overlay region.
+  Default:  (Win32 GDI BitBlt).
+* **IOcr** – extracts text from the captured bitmap.
+  Default:  (stub – coordinate validation disabled).
+
+Replace  in  /  with a
+ implementation to enable live coordinate validation.
+When OCR confidence falls below 50 % the bot enters 
+and stops safely.
 
 ---
 
@@ -61,10 +86,14 @@ field, with the crop item (e.g. potatoes) in the active hotbar slot.
 
 ```
 src/
-  main.cpp    – wWinMain entry point
-  gui.h/.cpp  – Win32 window, message loop, UI logic
-  bot.h/.cpp  – BFS traversal + Win32 SendInput automation
-  utils.h/.cpp– String helpers, number parsing
+  main.cpp            – wWinMain entry point
+  gui.h / gui.cpp     – Win32 window, message loop, UI controls, log window
+  bot.h / bot.cpp     – State machine, BFS traversal, SendInput automation
+  state_machine.h     – BotState enum and state-name helper
+  screen_capture.h/.cpp – IScreenCapture interface + GDI implementation
+  ocr.h               – IOcr interface + NullOcr stub
+  parser.h / parser.cpp – CoordParser: parse F3 overlay text for XYZ coords
+  utils.h / utils.cpp – String helpers, number parsing
 CMakeLists.txt
 BUILD.md
 ```
