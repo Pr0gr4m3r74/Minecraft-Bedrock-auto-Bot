@@ -41,6 +41,8 @@ set(SOURCES
     src/gui.cpp
     src/bot.cpp
     src/utils.cpp
+    src/parser.cpp
+    src/screen_capture.cpp
 )
 
 # WIN32 tells CMake to use wWinMain (GUI subsystem, no console window).
